@@ -30,6 +30,8 @@
 "
 " TODO nicier documentation...
 " TODO improve the magic so it ignores comments at the end of the string
+" TODO nlmagic for tex fails for environments with arguments
+" TODO tex expressions need to understand optional arguments
 " {{{ Some global variables and checks
 if exists("loaded_closeb") || &cp
 	finish
@@ -120,7 +122,7 @@ fun! <SID>Close(closemode)
 	let s:errorlines = ''
 	let s:ignoreemptystack = 0
 	let result = searchpair(b:closeb_openre,'', b:closeb_closere, 'nbW', '(' . b:closeb_skip . ') || <SID>Callback()' )
-	echomsg "at the end The stack " . s:stack
+	" echomsg "at the end The stack " . s:stack
 	if result == -1
 		" an error occurred. (very unlikely, cause searchpair() must have
 		" operated wrong then)
@@ -152,7 +154,6 @@ fun! <SID>Close(closemode)
 				let mymatch = mymatch_try
 			endif
 		else
-			echomsg "not trying middle"
 			exec "let mymatch = " . b:closeb_makeclosetag
 		endif
 		if b:closeb_nlmagic && s:lasttag_line != line('.') && getline(s:lasttag_line) =~ '^\s*' . b:closeb_openre . '\s*$'
@@ -172,11 +173,9 @@ fun! <SID>Callback()
 	if s:lasttag != '' && ! s:ignoreemptystack
 		return -1
 	endif
-	echomsg "Callback(): " . mymatch
 	exec "let result = " . b:closeb_isopen
 	if result
 		exec "let mymatch = " . b:closeb_openname
-		echomsg "Detect open: " . mymatch
 		if s:stack == ''
 			" Close() == mymatch, remember, also the line number:
 			let s:lasttag = s:separator . mymatch . s:lasttag
@@ -184,9 +183,9 @@ fun! <SID>Callback()
 			let s:lasttag_line = line('.')
 		else
 			if mymatch == strpart(s:stack,0,strlen(mymatch))
-				echomsg "mymatch matches s:stack start, popping: " . mymatch
+				" echomsg "mymatch matches s:stack start, popping: " . mymatch
 			else
-				echomsg "mymatch did not match the s:stack start, line " . line('.')
+				" echomsg "mymatch did not match the s:stack start, line " . line('.')
 				let s:errorlines = s:separator . line('.')
 			endif
 			" pop away, if error or not
@@ -195,10 +194,10 @@ fun! <SID>Callback()
 		endif
 	else " !b:closeb_isopen(mymatch)
 		exec "let mymatch = " . b:closeb_closename
-		echomsg "Pushing on stack: " . mymatch
+		" echomsg "Pushing on stack: " . mymatch
 		let s:stack = mymatch . s:separator . s:stack
 	endif
-	echomsg "The stack " . s:stack
+	" echomsg "The stack " . s:stack
 	return 0 " signal never skip here
 endfun
 " }}}
