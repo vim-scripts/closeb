@@ -1,0 +1,13 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=226
+
+This plugin closes complex brackets / tags.
+It is an extended version of closetag, (http://vim.sourceforge.net/scripts/script.php?script_id=13)
+
+It comes with configuration for closing XML/SGML tags and LaTeX environments but is easily configured for other filetypes.
+
+Closing a bracket / tag also (optionally) inserts a newline and / or indentation, but only if the matching bracket / tag stood on a line of its own.
+
+If, during scanning for the bracket / tag to close, mismatching brackets are found, they are optionally highlighted.
+
+A path function is provided, which displays all open tags. For example, this function may be used in the status line for a constant display of location in an XML file.
+
